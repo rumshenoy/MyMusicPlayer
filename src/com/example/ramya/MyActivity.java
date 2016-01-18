@@ -1,4 +1,4 @@
-package com.example.MyMusicPlayer;
+package com.example.ramya;
 
 import android.app.Activity;
 import android.os.Bundle;
