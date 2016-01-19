@@ -107,12 +107,13 @@ public class MyActivity extends Activity implements MediaController.MediaPlayerC
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
-            case R.id.action_shuffle:
-                break;
             case R.id.action_end:
                 stopService(playIntent);
                 musicService=null;
                 System.exit(0);
+                break;
+            case R.id.action_shuffle:
+                musicService.setShuffle();
                 break;
         }
         return super.onOptionsItemSelected(item);

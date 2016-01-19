@@ -19,6 +19,7 @@ import com.example.ramya.model.Song;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by ramyashenoy on 1/18/16.
@@ -30,6 +31,8 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     private int songPosition;
     private String songTitle="";
     private static final int NOTIFY_ID=1;
+    private boolean shuffle=false;
+    private Random rand;
 
     private final  IBinder musicBind = new MusicBinder();
 
@@ -60,6 +63,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
                 .setOngoing(true).setContentTitle("Playing").setContentText(songTitle);
 
         Notification notification = builder.build();
+        rand = new Random();
 
     }
 
@@ -148,14 +152,29 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     }
 
     public void playNext(){
-        songPosition++;
-        if(songPosition > songs.size())
-            songPosition = 0;
+        if(shuffle){
+            int newSong = songPosition;
+            while(newSong == songPosition){
+                newSong=rand.nextInt(songs.size());
+            }
+            songPosition = newSong;
+        }else{
+            songPosition++;
+            if(songPosition > songs.size())
+                songPosition = 0;
+        }
+
         playSong();
     }
 
     @Override
     public void onDestroy() {
         stopForeground(true);
+    }
+
+    public void setShuffle(){
+        if(shuffle)
+            shuffle = false;
+        else shuffle = true;
     }
 }
