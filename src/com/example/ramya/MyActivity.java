@@ -37,6 +37,9 @@ public class MyActivity extends Activity {
                 return a.getTitle().compareTo(b.getTitle());
             }
         });
+
+        SongAdapter songAdt = new SongAdapter(this, songList);
+        songView.setAdapter(songAdt);
     }
 
     public ArrayList<Song> getSongList() {
