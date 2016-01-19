@@ -1,14 +1,16 @@
 package com.example.ramya;
 
 import android.app.Activity;
-import android.content.ContentResolver;
+import android.content.*;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.MediaStore;
 import android.widget.ListView;
 import com.example.MyMusicPlayer.R;
 import com.example.ramya.model.Song;
+import com.example.ramya.MusicService.MusicBinder;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,6 +23,9 @@ public class MyActivity extends Activity {
 
     private ArrayList<Song> songList;
     private ListView songView;
+    private MusicService musicService;
+    private Intent playIntent;
+    private boolean musicBound = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,7 +45,24 @@ public class MyActivity extends Activity {
 
         SongAdapter songAdt = new SongAdapter(this, songList);
         songView.setAdapter(songAdt);
+
+
     }
+
+    private ServiceConnection musicConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            MusicService.MusicBinder binder= (MusicService.MusicBinder) iBinder;
+            musicService = binder.getService();
+            musicService.setList(songList);
+            musicBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            musicBound = false;
+        }
+    };
 
     public ArrayList<Song> getSongList() {
         ContentResolver musicResolver = getContentResolver();
@@ -60,5 +82,15 @@ public class MyActivity extends Activity {
             }while(musicCursor.moveToNext());
         }
         return songList;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(playIntent == null){
+            playIntent = new Intent(this, MusicService.class);
+            bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
+            startService(playIntent);
+        }
     }
 }
