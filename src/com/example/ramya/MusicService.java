@@ -45,6 +45,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
+        mediaPlayer.start();
 
     }
 
@@ -94,5 +95,9 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         MusicService getService(){
             return MusicService.this;
         }
+    }
+
+    public void setSong(int songIndex){
+        songPosition = songIndex;
     }
 }

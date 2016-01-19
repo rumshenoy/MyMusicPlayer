@@ -7,6 +7,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.MediaStore;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
 import com.example.MyMusicPlayer.R;
 import com.example.ramya.model.Song;
@@ -92,5 +94,31 @@ public class MyActivity extends Activity {
             bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
             startService(playIntent);
         }
+    }
+
+    public void songPicked(View view){
+        musicService.setSong(Integer.parseInt(view.getTag().toString()));
+        musicService.playSong();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case R.id.action_shuffle:
+                break;
+            case R.id.action_end:
+                stopService(playIntent);
+                musicService=null;
+                System.exit(0);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy(){
+        stopService(playIntent);
+        musicService=null;
+        super.onDestroy();
     }
 }
