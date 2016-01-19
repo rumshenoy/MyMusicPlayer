@@ -1,6 +1,7 @@
 package com.example.ramya;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.*;
 import android.database.Cursor;
 import android.net.Uri;

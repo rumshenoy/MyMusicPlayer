@@ -1,5 +1,7 @@
 package com.example.ramya;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentUris;
 import android.content.Intent;
@@ -11,6 +13,7 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.provider.MediaStore;
 import android.util.Log;
+import com.example.MyMusicPlayer.R;
 import com.example.ramya.model.Song;
 
 import java.io.IOException;
@@ -25,6 +28,8 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     private MediaPlayer player;
     private ArrayList<Song> songs;
     private int songPosition;
+    private String songTitle="";
+    private static final int NOTIFY_ID=1;
 
     private final  IBinder musicBind = new MusicBinder();
 
@@ -46,6 +51,15 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         mediaPlayer.start();
+        Intent notIntent = new Intent(this, MyActivity.class);
+        notIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Notification.Builder builder = new Notification.Builder(this);
+        builder.setContentIntent(pendingIntent).setSmallIcon(R.drawable.play).setTicker(songTitle)
+                .setOngoing(true).setContentTitle("Playing").setContentText(songTitle);
+
+        Notification notification = builder.build();
 
     }
 
@@ -59,6 +73,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     public void playSong(){
         player.reset();
         Song playSong = songs.get(songPosition);
+        songTitle = playSong.getTitle();
         long currSong = playSong.getId();
         Uri trackUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, currSong);
         try{
@@ -139,4 +154,8 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         playSong();
     }
 
+    @Override
+    public void onDestroy() {
+        stopForeground(true);
+    }
 }
